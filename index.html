@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astro Health Monitor</title>
+<meta name="description" content="Crew health monitoring and response for missions where Earth cannot answer in time. Interactive simulation prototype, NASA Space Apps 2026.">
+<style>
+  :root { --bg:#0e1320; --panel:#161d2e; --line:#26304a; --text:#e8edf6; --dim:#a3afc4; --accent:#f5af0c; --ok:#4cc38a; --link:#7fb4ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 Inter, "Segoe UI", system-ui, -apple-system, sans-serif; }
+  main { max-width:1040px; margin:0 auto; padding:40px 16px 56px; }
+  .sim { display:inline-block; background:var(--accent); color:#17171b; font:700 12px/1 ui-monospace, Consolas, monospace; letter-spacing:.06em; padding:5px 8px; border-radius:4px; }
+  h1 { font-size:clamp(30px,5vw,46px); line-height:1.1; margin:14px 0 6px; letter-spacing:-.01em; }
+  .tag { font-size:clamp(18px,2.6vw,22px); color:var(--accent); margin:0 0 14px; font-weight:600; }
+  .lead { color:var(--dim); max-width:760px; margin:0 0 26px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin:0 0 14px; }
+  a.card { display:block; text-decoration:none; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px 18px 16px; transition:border-color .15s, transform .15s; }
+  a.card:hover, a.card:focus-visible { border-color:var(--accent); transform:translateY(-2px); outline:none; }
+  .card .k { font:600 12px/1 ui-monospace, Consolas, monospace; color:var(--accent); letter-spacing:.05em; }
+  .card h2 { font-size:19px; margin:8px 0 6px; line-height:1.25; }
+  .card p { margin:0; color:var(--dim); font-size:14.5px; }
+  .card .go { display:inline-block; margin-top:12px; color:var(--link); font-weight:600; font-size:14.5px; }
+  .more { margin:6px 0 30px; color:var(--dim); font-size:14.5px; }
+  .more a { color:var(--link); }
+  .note { background:#1b2236; border-left:3px solid var(--accent); padding:12px 14px; border-radius:6px; color:var(--dim); font-size:14.5px; margin:0 0 30px; }
+  h3 { font-size:18px; margin:28px 0 10px; }
+  table { width:100%; border-collapse:collapse; font-size:14.5px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:600; }
+  .r { color:var(--ok); font-weight:600; } .s { color:var(--accent); font-weight:600; }
+  ul { padding-left:20px; color:var(--dim); } li { margin:4px 0; }
+  kbd { font:12px ui-monospace, Consolas, monospace; background:#222b40; border:1px solid var(--line); border-radius:4px; padding:1px 5px; color:var(--text); }
+  footer { margin-top:36px; color:#7d889c; font-size:13px; }
+  @media (max-width:640px) { th:nth-child(3), td:nth-child(3) { display:none; } }
+</style>
+</head>
+<body>
+<main>
+  <span class="sim">SIMULATION PROTOTYPE</span>
+  <h1>Astro Health Monitor</h1>
+  <p class="tag">When Earth can't answer, the crew still can.</p>
+  <p class="lead">A crew health monitoring and response system for missions where ground advice is delayed or cut off. Sensors, wearables and crew self-checks feed one event history; the system grades readings against stated thresholds, opens written procedures, tells each person what to do and why, and keeps checking until the data shows recovery. Everything runs in your browser — no install, no login.</p>
+
+  <div class="grid">
+    <a class="card" href="app.html?t=14:58&amp;play=1&amp;speed=10">
+      <span class="k">SPACECRAFT · D1 14:58</span>
+      <h2>A CO₂ alert in the Lab, then Earth goes quiet</h2>
+      <p>First person as crew member Kim. At 15:00 the cabin CO₂ alert reaches your wrist; at 15:40 the link to Earth drops and the crew carries on with onboard steps. A repair counts only when the data shows recovery.</p>
+      <span class="go">Open at the alert →</span>
+    </a>
+    <a class="card" href="app.html?mission=rover&amp;t=10:01&amp;play=1&amp;speed=5">
+      <span class="k">MARS ROVER · D1 10:01</span>
+      <h2>Solar particle event during an EVA</h2>
+      <p>Real Curiosity MSL-RAD surface data. The helmet display tells the pair to end the EVA; the rover keeps working while the relay to the base is down.</p>
+      <span class="go">Open on EVA →</span>
+    </a>
+    <a class="card" href="app.html?app=tablet&amp;t=15:12">
+      <span class="k">DEVICE · KIM'S TABLET · 15:12</span>
+      <h2>What the crew member actually sees</h2>
+      <p>The real tablet program at its real size: alerts, my checklist, self-check, body map with sources and data age.</p>
+      <span class="go">Open the tablet →</span>
+    </a>
+    <a class="card" href="app.html?app=ground&amp;t=22:12">
+      <span class="k">GROUND · 22:12</span>
+      <h2>The late reply from Earth</h2>
+      <p>Advice written for a situation that has already changed: the crew sees which parts still apply and the medical officer adopts or declines with a reason.</p>
+      <span class="go">Open the ground console →</span>
+    </a>
+  </div>
+  <p class="more">Also: <a href="app.html">full app from the start of the day</a> · <a href="app.html?mission=rover&amp;t=11:50&amp;play=1&amp;speed=5">rover cabin CO₂ fault (11:50)</a> · <a href="app.html?app=devices&amp;t=15:12">all four devices side by side</a>. In first person: drag to look, <kbd>T</kbd> tablet, <kbd>G</kbd> watch, click a laptop to use it, <kbd>Esc</kbd> to come back. Best on a desktop browser.</p>
+
+  <div class="note"><b>Decision support, not diagnosis: the medical officer decides.</b> Crew, symptoms and equipment faults are simulated or scripted; the radiation curves are real NASA data (see below). Thresholds, timings and roles are project assumptions. Not clinically validated, not a medical device. No astronaut medical data is used.</div>
+
+  <h3>What is real and what is simulated</h3>
+  <table>
+    <tr><th>Item</th><th>Status</th><th>Detail</th></tr>
+    <tr><td>Rover radiation (Mars surface)</td><td class="r">Real data</td><td>Curiosity MSL-RAD surface dose rate, 20 May 2024 solar particle event, unscaled; only the clock is shifted.</td></tr>
+    <tr><td>Spacecraft radiation background</td><td class="r">Real data</td><td>Artemis I / Orion HERA; the spacecraft SPE uses only the shape of a 2017 Curiosity event (time-compressed, assumed peak).</td></tr>
+    <tr><td>Cabin CO₂ history</td><td class="r">Real data</td><td>ISS environmental telemetry (EDA) for the pre-start history; CO₂ after the start is simulated with published per-person rates.</td></tr>
+    <tr><td>Rover route</td><td class="r">Real data</td><td>Curiosity traverse waypoints, Gale crater.</td></tr>
+    <tr><td>Crew vitals, symptoms, faults</td><td class="s">Simulated</td><td>Scripted scenario; every screen labels simulated and assumed values.</td></tr>
+    <tr><td>"Med Assist", suit estimates, CO₂ forecast</td><td class="s">Stand-ins</td><td>Rule-based stand-ins for onboard decision support and prognostics, labelled on screen; not language models.</td></tr>
+  </table>
+
+  <h3>What the system does not do</h3>
+  <ul>
+    <li>It does not diagnose, prescribe, or decide who is fit for an EVA or for duty — the crew medical officers decide; the software records their decision.</li>
+    <li>It cannot see inside the suit and does not measure personal dose; hand injury, decompression sickness and dust in the eyes rely on crew reports.</li>
+    <li>Earth support is not simulated on Mars (3–22 light-minutes one way); real-time support comes from the base.</li>
+    <li>Automated scenario checks show the software follows its own rules; they do not validate any medical conclusion.</li>
+  </ul>
+
+  <footer>NASA Space Apps Challenge 2026 · "Create Health Monitoring Software for Astronauts on Space Missions". Team project; not affiliated with or endorsed by NASA. Crew 3D avatars: Microsoft Rocketbox (MIT). Data courtesy of NASA OSDR (EDA, RadLab) and the MSL mission.</footer>
+</main>
+</body>
+</html>
