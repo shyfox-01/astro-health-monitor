@@ -72,6 +72,18 @@
   h3.sec, h3 { text-shadow:0 1px 12px rgba(0,0,0,.8); }
   .more, footer { text-shadow:0 1px 8px rgba(0,0,0,.9); }
   footer { color:#8b95a8; }
+  .duo { display:grid; grid-template-columns:1.25fr 1fr; gap:16px; align-items:start; }
+  .tri { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  .box, ol.ladder, ul.pts { background:var(--panel); border:1px solid var(--line); border-radius:12px; -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur); }
+  .box { padding:16px; color:var(--dim); font-size:14.5px; } .box b { display:block; color:var(--text); font-size:16px; margin-bottom:6px; }
+  ol.ladder, ul.pts { margin:0; padding:14px 18px 14px 34px; color:var(--dim); font-size:14.5px; }
+  ol.ladder li, ul.pts li { margin:0 0 9px; } ol.ladder li b { color:var(--text); display:block; }
+  ul.pts li b { color:var(--text); }
+  figure.clip { margin:0; } figure.clip video { width:100%; display:block; border-radius:12px; border:1px solid var(--line); background:#000; }
+  figure.clip figcaption { color:var(--dim); font-size:13px; margin-top:6px; text-shadow:0 1px 8px #000; }
+  .nasa { display:inline-block; margin-left:4px; padding:1px 6px; border-radius:4px; background:rgba(76,195,138,.16); color:var(--ok); font:700 10.5px/1.5 ui-monospace, Consolas, monospace; letter-spacing:.04em; vertical-align:1px; }
+  table.cover td:first-child { white-space:normal; min-width:120px; }
+  @media (max-width:900px) { .duo { grid-template-columns:1fr; } }
   @media (max-width:900px) {
     .hero { min-height:auto; }
     .hero::before { background-size:cover; background-position:62% bottom; }
@@ -106,28 +118,75 @@
 
   <h3 class="sec">How it works: one pipeline for every health signal</h3>
   <ol class="flow">
-    <li><b>Measure</b>Wearables, the medical kit, cabin sensors and short crew self-checks.</li>
-    <li><b>Check the data</b>Every reading carries its source and age. A missing or poor-contact reading is measured again, never treated as healthy.</li>
-    <li><b>Detect</b>Thresholds from NASA standards and medical literature; every rule names its source or is marked as an assumption.</li>
-    <li><b>Anticipate</b>Exposure history (CO₂, radiation, sleep) schedules extra self-checks before symptoms are reported.</li>
-    <li><b>Act</b>Written procedures give each crew member their own task and the reason it is theirs.</li>
-    <li><b>Confirm and report</b>A task closes only when the readings recover. Reports to Earth carry the time of the data; late advice is flagged.</li>
+    <li><b>Measure</b>Every source of health data on board: wearables, brain sensing, the medical kit, cabin sensors and the crew's own reports.</li>
+    <li><b>Trust the data</b>Every reading carries its source, quality and age. Bad or missing data is measured again, never mistaken for good health.</li>
+    <li><b>Detect</b>Readings are judged against NASA standards and medical evidence, and every judgement shows where it comes from.</li>
+    <li><b>Anticipate</b>Forecasts of the cabin and of each person's risk bring checks forward, before symptoms appear.</li>
+    <li><b>Act</b>Each alert becomes one coordinated plan: every crew member gets their own task and knows why it is theirs.</li>
+    <li><b>Confirm and report</b>A problem closes only when the data shows recovery. Earth is kept informed, and late advice is weighed against the present.</li>
   </ol>
 
-  <h3 class="sec">What it monitors</h3>
-  <table class="cover">
-    <tr><th>Area</th><th>Signals</th><th>In this prototype</th></tr>
-    <tr><td>Vital signs</td><td>Heart rate, oxygen saturation, blood pressure, body temperature</td><td class="r">Running end to end</td></tr>
-    <tr><td>Symptoms and daily condition</td><td>Headache, nausea, breathlessness, blurred vision, fatigue, sleep, mood</td><td class="r">Running end to end</td></tr>
-    <tr><td>Cabin air</td><td>CO₂, temperature, humidity</td><td class="r">Running end to end · ISS CO₂ history</td></tr>
-    <tr><td>Radiation</td><td>Area dose rate, cumulative dose</td><td class="r">Running end to end · NASA Artemis I and Curiosity data</td></tr>
-    <tr><td>Data quality</td><td>Missing, stale and poor-contact readings</td><td class="r">Running end to end</td></tr>
-    <tr><td>More signals</td><td>Oxygen partial pressure, cabin pressure, ammonia, noise, personal dosimeter, body mass, vision checks, blood glucose</td><td class="s">Ready to connect a data source</td></tr>
-  </table>
-  <p class="more">Each signal is a sensor entry, a rule and a procedure in data files, so adding one does not change the monitoring or response code. The same code also runs a second mission, a Mars rover excursion, from its own mission pack.</p>
+  <h3 class="sec">Body and environment: what we monitor and how it is measured</h3>
+  <div class="duo">
+    <table class="cover">
+      <tr><th>Area</th><th>Signals</th><th>How it is measured</th></tr>
+      <tr><td>Vital signs</td><td>Heart rate, oxygen saturation, blood pressure, body temperature</td><td>Wrist band; medical-kit oximeter, blood-pressure cuff and thermometer</td></tr>
+      <tr><td>Symptoms and daily condition</td><td>Headache, nausea, breathlessness, blurred vision, fatigue, sleep, mood</td><td>Short self-checks on the tablet; sleep from the wrist band</td></tr>
+      <tr><td>Brain and alertness</td><td>Alertness, sleep recovery</td><td>EEG headband (NeuroBand) with a short reaction-time test</td></tr>
+      <tr><td>Routine exams</td><td>Body mass, vision, periodic medical exams</td><td>Scale, vision charts; exams run by the crew medical officer</td></tr>
+      <tr><td>Cabin air <span class="nasa">NASA data</span></td><td>CO₂, temperature, humidity; oxygen, cabin pressure, ammonia, noise</td><td>Sensors in every module; CO₂ history from ISS cabin telemetry</td></tr>
+      <tr><td>Radiation <span class="nasa">NASA data</span></td><td>Area dose rate, cumulative dose</td><td>Area monitors and personal dosimeters; NASA Artemis I and Curiosity measurements</td></tr>
+      <tr><td>Data quality</td><td>Missing, stale and poor-contact readings</td><td>Every reading carries its source, quality and age</td></tr>
+    </table>
+    <figure class="clip"><video autoplay muted loop playsinline preload="metadata" poster="media/slides/media/bodymap-poster.jpg" src="media/slides/media/bodymap.mp4"></video><figcaption>Kim's tablet: tap a body region to see its readings, limits and sources.</figcaption></figure>
+  </div>
+  <p class="more">The system is open to new measurements: a glucose meter, a new wearable or a new cabin sensor joins the same pipeline as a sensor, a rule and a procedure — no new code.</p>
 
-  <h3 class="sec">See it run: two missions driven by NASA data</h3>
-  <p class="more">We ran the whole pipeline where public NASA data exists: cabin CO₂ on a Mars-transit spacecraft, and a solar storm during a Mars-surface EVA. Open any moment below; the software runs live in your browser.</p>
+  <h3 class="sec">Prediction: seeing problems before they arrive</h3>
+  <div class="tri">
+    <div class="box"><b>Environment</b>Models learned from real spacecraft cabin telemetry (ISS CO₂ data) forecast where the cabin air is heading, hours before a limit is crossed.</div>
+    <div class="box"><b>Health</b>Each astronaut's own baseline, combined with evidence on how CO₂, radiation and lost sleep affect the body, estimates who may be affected and when.</div>
+    <div class="box"><b>Act early, keep score</b>Checks are brought forward to the moment they matter, and every forecast is scored against what really happened, so the crew knows how far to trust it.</div>
+  </div>
+
+  <h3 class="sec">Alarms and data: the right information to the right person</h3>
+  <div class="duo">
+    <ol class="ladder">
+      <li><b>On the wrist</b>An alert finds the person wherever they are, and keeps reminding until it is acknowledged.</li>
+      <li><b>In the hand</b>Each crew member sees their own readings, what they mean, and exactly what to do next.</li>
+      <li><b>Around the cabin</b>Ship-wide hazards are seen and heard by everyone, graded by urgency. Personal health stays private.</li>
+      <li><b>Crew medical officer</b>Has the whole crew's picture and makes the medical decisions on board.</li>
+      <li><b>Earth</b>Sees what the ship has reported and how old it is, and advises across the delay.</li>
+    </ol>
+    <figure class="clip"><video autoplay muted loop playsinline preload="metadata" poster="media/slides/media/alerts-poster.jpg" src="media/slides/media/alerts.mp4"></video><figcaption>A cabin CO₂ alert reaching a crew member's wrist. Module workstations show the whole picture: environment, events, crew and the link to Earth.</figcaption></figure>
+  </div>
+
+  <h3 class="sec">Many crew, one plan: coordinating the response</h3>
+  <div class="duo">
+    <ul class="pts">
+      <li><b>The right person for each task,</b> chosen by role, skill, location and health. Someone who is unwell is relieved of risky work.</li>
+      <li><b>Nobody alone.</b> Crewmates check on each other, and hazardous work is always watched.</li>
+      <li><b>First things first:</b> protect people, check, fix the source, treat, and measure again.</li>
+      <li><b>The plan adapts.</b> When something more urgent happens, work pauses and resumes on its own afterwards.</li>
+      <li><b>Every assignment explains itself,</b> and any task can be handed back and re-planned.</li>
+    </ul>
+    <figure class="clip"><video autoplay muted loop playsinline preload="metadata" poster="media/slides/media/steps-poster.jpg" src="media/slides/media/steps.mp4"></video><figcaption>A crew member's own checklist: each step, who has it, and whether the data has confirmed it.</figcaption></figure>
+  </div>
+
+  <h3 class="sec">Any outpost: spacecraft, rover or surface base</h3>
+  <div class="duo">
+    <ul class="pts">
+      <li><b>The same system travels.</b> A spacecraft, a pressurized rover and a surface base each run it with their own crew, sensors and procedures.</li>
+      <li><b>Split crews stay coordinated.</b> When the rover and the base lose contact, each side keeps working on what it knows and catches up when the link returns.</li>
+      <li><b>Alarms follow the person,</b> from the cabin to the wrist to the helmet during a spacewalk.</li>
+      <li><b>Fewer people, adapted rules.</b> Procedures scale to a two-person crew, with medical support from the base.</li>
+      <li><b>Real radiation <span class="nasa">NASA data</span>.</b> Curiosity's measured May 2024 solar storm tells the pair to end the EVA and return to the rover.</li>
+    </ul>
+    <figure class="clip"><video autoplay muted loop playsinline preload="metadata" poster="media/slides/media/mars-poster.jpg" src="media/slides/media/mars.mp4"></video><figcaption>The helmet display warns of the solar particle event during the EVA.</figcaption></figure>
+  </div>
+
+  <h3 class="sec">Try it yourself</h3>
+  <p class="more">Every moment below opens the running software in your browser — no install, no login.</p>
   <div class="grid">
     <a class="card" href="app.html?t=14:48&amp;play=1&amp;speed=10">
       <span class="k">SPACECRAFT · D1 14:48</span>
