@@ -1,6 +1,6 @@
 # Astro Health Monitor — live demo build
 
-This repository only hosts the **built static demo** (no source) for the NASA Space Apps Challenge 2026 project "Astro Health Monitor".
+This repository only hosts the **built static demo** (no source) for the NASA Space Apps Challenge 2026 project "Astro Health Monitor" by Team TAKE.
 
 - Live demo: https://shyfox-01.github.io/astro-health-monitor/
 - Everything runs in the browser: simulation, monitoring, self-checks, response steps and device programs.
