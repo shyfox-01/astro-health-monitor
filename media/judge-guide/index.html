@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="How Astro Health Monitor works: health readings, crew tasks, recovery checks and NASA datasets. Team TAKE, NASA Space Apps 2026.">
-<title>Start here · Astro Health Monitor</title>
+<meta name="description" content="How Untethered Health Monitor works: health readings, crew tasks, recovery checks and NASA datasets. Team TAKE, NASA Space Apps 2026.">
+<title>Start here · Untethered Health Monitor</title>
 <style>
 :root{color-scheme:dark;--bg:#0d1423;--panel:#151f31;--ink:#f1f5fc;--muted:#a7b5ca;--line:#2b3b51;--cyan:#8ad7df;--gold:#f2c778}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:var(--cyan)}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit}a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:5px}button{cursor:pointer}button:disabled{opacity:.35;cursor:default}[hidden]{display:none!important}
@@ -20,7 +20,7 @@
 </head>
 <body>
 <div class="shell">
- <header class="top"><a class="brand" href="../../index.html"><span class="orbit" aria-hidden="true"></span><span>Astro Health Monitor<small>TEAM TAKE / SPACE APPS 2026</small></span></a><a class="skip" href="../../app.html?t=14:48&amp;play=1&amp;speed=10">Skip to live demo ↗</a></header>
+ <header class="top"><a class="brand" href="../../index.html"><span class="orbit" aria-hidden="true"></span><span>Untethered Health Monitor<small>TEAM TAKE / SPACE APPS 2026</small></span></a><a class="skip" href="../../app.html?t=14:48&amp;play=1&amp;speed=10">Skip to live demo ↗</a></header>
  <nav aria-label="Tour steps" id="step-nav" hidden><ol class="steps">
   <li><button type="button" data-go="0"><span class="step-number">01</span>Overview</button></li>
   <li><button type="button" data-go="1"><span class="step-number">02</span>Monitoring</button></li>
@@ -93,7 +93,7 @@
   dots.forEach((button,i)=>{if(i===active)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current');button.classList.toggle('past',i<active);});
   back.disabled=active===0;next.hidden=active===slides.length-1;launch.hidden=!next.hidden;
   position.textContent=`Step ${active+1} of ${slides.length}`;
-  document.title=`${active+1}/6 · ${['Overview','Monitoring','Crew tasks','Recheck','NASA data','Open demo'][active]} · Astro Health Monitor`;
+  document.title=`${active+1}/6 · ${['Overview','Monitoring','Crew tasks','Recheck','NASA data','Open demo'][active]} · Untethered Health Monitor`;
   if(focus){document.getElementById(`title-${active}`).focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'});}
  }
  function go(index){index=Math.max(0,Math.min(slides.length-1,index));if(index===active)return;location.hash=`step-${index+1}`;}
