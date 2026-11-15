@@ -34,7 +34,13 @@
   ul { padding-left:20px; color:var(--dim); } li { margin:4px 0; }
   kbd { font:12px ui-monospace, Consolas, monospace; background:#222b40; border:1px solid var(--line); border-radius:4px; padding:1px 5px; color:var(--text); }
   footer { margin-top:36px; color:#7d889c; font-size:13px; }
-  @media (max-width:640px) { th:nth-child(3), td:nth-child(3) { display:none; } }
+  h3.sec { font-size:22px; margin:34px 0 12px; }
+  ol.flow { list-style:none; counter-reset:f; padding:0; margin:0 0 6px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+  ol.flow li { counter-increment:f; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 14px 13px; margin:0; color:var(--dim); font-size:13.5px; line-height:1.45; }
+  ol.flow li b { display:block; color:var(--text); font-size:15px; margin-bottom:5px; }
+  ol.flow li b::before { content:counter(f) "  "; color:var(--accent); font:700 13px ui-monospace, Consolas, monospace; }
+  table.cover td:first-child { color:var(--text); white-space:nowrap; }
+  @media (max-width:640px) { th:nth-child(3), td:nth-child(3) { display:none; } table.cover th:nth-child(3), table.cover td:nth-child(3) { display:table-cell; } table.cover td:first-child { white-space:normal; } }
 </style>
 </head>
 <body>
@@ -43,7 +49,7 @@
   <span class="sim">SIMULATION PROTOTYPE</span>
   <h1>Astro Health Monitor</h1>
   <p class="tag">When Earth can't answer, the crew still can.</p>
-  <p class="lead">A crew health monitoring and response system for missions where ground advice is delayed or cut off. Sensors, wearables and crew self-checks feed one event history; the system grades readings against stated thresholds, opens written procedures, tells each person what to do and why, and keeps checking until the data shows recovery. Everything runs in your browser — no install, no login.</p>
+  <p class="lead">A health monitoring system for crews far from Earth. It watches each astronaut's body, the cabin air and the radiation around them; turns an abnormal reading into a clear task for the right person; and keeps checking until the data shows recovery — on board, even when advice from Earth is minutes away or cut off. Everything runs in your browser: no install, no login.</p>
 
   <section aria-label="Start here" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:20px 22px;margin:0 0 26px;border:1px solid #527b91;border-radius:12px;background:#17283b">
     <div><strong style="display:block;font-size:20px;color:#e8edf6">New here? Take the one-minute tour.</strong><span style="color:#b0c3d8;font-size:14px">Six short steps: the mission, crew roles, recovery checks and NASA data.</span></div>
@@ -55,6 +61,30 @@
     <figcaption>29.5-second demo recorded from this build, with AI-generated narration (ElevenLabs), burned-in English subtitles and original music synthesized in code (AI-assisted). Plays the 720p version (7.1 MB) for faster loading. <a href="media/astro-health-monitor-narrated.mp4?v=2" download>Download 1080p (27 MB)</a> · <a href="media/astro-health-monitor-29.5s.mp4?v=2" download>silent 1080p version</a> · <a href="media/wrist-raise.gif">wrist-raise GIF</a></figcaption>
   </figure>
 
+  <h3 class="sec">How it works: one pipeline for every health signal</h3>
+  <ol class="flow">
+    <li><b>Measure</b>Wearables, the medical kit, cabin sensors and short crew self-checks.</li>
+    <li><b>Check the data</b>Every reading carries its source and age. A missing or poor-contact reading is measured again, never treated as healthy.</li>
+    <li><b>Detect</b>Thresholds from NASA standards and medical literature; every rule names its source or is marked as an assumption.</li>
+    <li><b>Anticipate</b>Exposure history (CO₂, radiation, sleep) schedules extra self-checks before symptoms are reported.</li>
+    <li><b>Act</b>Written procedures give each crew member their own task and the reason it is theirs.</li>
+    <li><b>Confirm and report</b>A task closes only when the readings recover. Reports to Earth carry the time of the data; late advice is flagged.</li>
+  </ol>
+
+  <h3 class="sec">What it monitors</h3>
+  <table class="cover">
+    <tr><th>Area</th><th>Signals</th><th>In this prototype</th></tr>
+    <tr><td>Vital signs</td><td>Heart rate, oxygen saturation, blood pressure, body temperature</td><td class="r">Running end to end</td></tr>
+    <tr><td>Symptoms and daily condition</td><td>Headache, nausea, breathlessness, blurred vision, fatigue, sleep, mood</td><td class="r">Running end to end</td></tr>
+    <tr><td>Cabin air</td><td>CO₂, temperature, humidity</td><td class="r">Running end to end · ISS CO₂ history</td></tr>
+    <tr><td>Radiation</td><td>Area dose rate, cumulative dose</td><td class="r">Running end to end · NASA Artemis I and Curiosity data</td></tr>
+    <tr><td>Data quality</td><td>Missing, stale and poor-contact readings</td><td class="r">Running end to end</td></tr>
+    <tr><td>More signals</td><td>Oxygen partial pressure, cabin pressure, ammonia, noise, personal dosimeter, body mass, vision checks, blood glucose</td><td class="s">Ready to connect a data source</td></tr>
+  </table>
+  <p class="more">Each signal is a sensor entry, a rule and a procedure in data files, so adding one does not change the monitoring or response code. The same code also runs a second mission, a Mars rover excursion, from its own mission pack.</p>
+
+  <h3 class="sec">See it run: two missions driven by NASA data</h3>
+  <p class="more">We ran the whole pipeline where public NASA data exists: cabin CO₂ on a Mars-transit spacecraft, and a solar storm during a Mars-surface EVA. Open any moment below; the software runs live in your browser.</p>
   <div class="grid">
     <a class="card" href="app.html?t=14:48&amp;play=1&amp;speed=10">
       <span class="k">SPACECRAFT · D1 14:48</span>
@@ -83,9 +113,7 @@
   </div>
   <p class="more">Also: <a href="app.html?play=1">full app from the start of the day</a> (quiet hours fast-forward automatically; turn this off with “Skip quiet periods” on the time bar) · <a href="app.html?mission=rover&amp;t=11:50&amp;play=1&amp;speed=5">rover cabin CO₂ fault (11:50)</a> · <a href="app.html?app=devices&amp;t=15:12">all four devices side by side</a>. In first person: drag to look, <kbd>T</kbd> tablet, <kbd>G</kbd> watch, click a laptop to use it, <kbd>Esc</kbd> to come back. Best on a desktop browser.</p>
 
-  <div class="note"><b>Decision support, not diagnosis: the medical officer decides.</b> Crew, symptoms and equipment faults are simulated or scripted. The rover's solar particle event and the spacecraft's radiation background are real NASA measurements; the spacecraft's solar particle event is constructed from the shape of a real event (see below). Thresholds, timings and roles are project assumptions. Not clinically validated, not a medical device. No astronaut medical data is used.</div>
-
-  <h3>What is real and what is simulated</h3>
+  <h3>Data sources</h3>
   <table>
     <tr><th>Item</th><th>Status</th><th>Detail</th></tr>
     <tr><td>Rover radiation (Mars surface)</td><td class="r">Real data</td><td>Curiosity MSL-RAD surface dose rate, 20 May 2024 solar particle event, unscaled; only the clock is shifted.</td></tr>
@@ -96,13 +124,7 @@
     <tr><td>"Med Assist", suit estimates, CO₂ forecast</td><td class="s">Stand-ins</td><td>Rule-based stand-ins for onboard decision support and prognostics, labelled on screen; not language models.</td></tr>
   </table>
 
-  <h3>What the system does not do</h3>
-  <ul>
-    <li>It does not diagnose, prescribe, or decide who is fit for an EVA or for duty — the crew medical officers decide; the software records their decision.</li>
-    <li>It cannot see inside the suit and does not measure personal dose; hand injury, decompression sickness and dust in the eyes rely on crew reports.</li>
-    <li>Earth support is not simulated on Mars (3–22 light-minutes one way); real-time support comes from the base.</li>
-    <li>Automated scenario checks show the software follows its own rules; they do not validate any medical conclusion.</li>
-  </ul>
+  <div class="note" style="margin-top:22px"><b>Decision support, not diagnosis:</b> crew medical officers make medical decisions and the software records them. In this prototype the crew, their readings, symptoms and equipment faults are simulated; no astronaut medical data is used. Not a medical device.</div>
 
   <footer>NASA Space Apps Challenge 2026 · "Create Health Monitoring Software for Astronauts on Space Missions". Team TAKE; not affiliated with or endorsed by NASA. Crew 3D avatars: Microsoft Rocketbox (MIT). Data courtesy of NASA OSDR (EDA, RadLab) and the MSL mission.</footer>
 </main>
