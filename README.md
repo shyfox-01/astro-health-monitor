@@ -7,7 +7,7 @@ Click **Next** through six short steps, then enter the working prototype. No log
 | Start here | What you will see |
 | --- | --- |
 | [Guided tour](https://shyfox-01.github.io/astro-health-monitor/media/judge-guide/) | The problem, four crew members' responsibilities, verification and NASA data |
-| [29.5-second demo video](https://shyfox-01.github.io/astro-health-monitor/media/astro-health-monitor-narrated-720p.mp4?v=2) | The updated English narration and subtitles |
+| [29.5-second demo video](https://shyfox-01.github.io/astro-health-monitor/media/astro-health-monitor-narrated-720p.mp4?v=3) | The updated English narration and subtitles |
 | [Live spacecraft scene](https://shyfox-01.github.io/astro-health-monitor/app.html?t=14:48&play=1&speed=10) | Kim's first-person view just before the cabin CO₂ alert |
 | [Live Mars scene](https://shyfox-01.github.io/astro-health-monitor/app.html?mission=rover&t=10:01&play=1&speed=5) | A radiation warning driven by NASA Curiosity MSL-RAD data |
 | [Full overview and data boundaries](https://shyfox-01.github.io/astro-health-monitor/) | Dataset use, project limitations and all app entry points |
