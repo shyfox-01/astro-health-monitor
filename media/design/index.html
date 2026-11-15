@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design notes · Untethered Health Monitor</title>
+<meta name="description" content="How Untethered Health Monitor is designed: architecture, data flow, monitoring, prediction, crew coordination, communication with Earth and NASA data. Team TAKE, NASA Space Apps 2026.">
+<style>
+  :root { --bg:#020305; --panel:rgba(18,26,44,.66); --line:rgba(140,170,225,.20); --text:#e8edf6; --dim:#a9b4c8; --accent:#f5af0c; --link:#7fb4ff; --ok:#4cc38a; }
+  * { box-sizing:border-box; }
+  html { background:#020305; }
+  body { margin:0; color:var(--text); font:16px/1.6 Inter, "Segoe UI", system-ui, -apple-system, sans-serif; background:transparent; }
+  body::before { content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:radial-gradient(1500px 900px at 0% 0%, rgba(15,34,70,.55), rgba(15,34,70,0) 70%),
+               linear-gradient(rgba(2,3,5,.55), rgba(2,3,5,.55)),
+               url(../iss068e044995.jpg) 70% 60% / cover no-repeat, #020305; }
+  body::after { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.8; background:url(../stars-iss073e1198938.png) center / cover no-repeat; }
+  main { max-width:960px; margin:0 auto; padding:40px 16px 64px; }
+  a { color:var(--link); }
+  .top { font:600 13px/1 ui-monospace, Consolas, monospace; letter-spacing:.12em; color:var(--dim); margin:0 0 14px; }
+  .top a { color:var(--dim); text-decoration:none; } .top a:hover { color:var(--text); }
+  h1 { font-size:clamp(30px,5vw,44px); line-height:1.12; margin:0 0 8px; }
+  .tag { color:var(--accent); font-weight:600; font-size:19px; margin:0 0 18px; }
+  .lead { color:#c3cbda; max-width:760px; margin:0 0 26px; }
+  nav.toc { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin:0 0 30px; -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  nav.toc ol { margin:0; padding-left:20px; columns:2; column-gap:28px; color:var(--dim); font-size:14.5px; }
+  nav.toc li { margin:2px 0; break-inside:avoid; }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 22px 12px; margin:0 0 18px; -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+  h2 { font-size:21px; margin:0 0 10px; }
+  h2 .n { color:var(--accent); font:700 14px ui-monospace, Consolas, monospace; margin-right:8px; vertical-align:2px; }
+  p, li { color:var(--dim); font-size:15px; }
+  p b, li b { color:var(--text); }
+  ul, ol { padding-left:20px; }
+  li { margin:4px 0; }
+  .flow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:6px 0 14px; }
+  .flow span { background:rgba(127,180,255,.10); border:1px solid rgba(127,180,255,.30); color:var(--text); border-radius:8px; padding:6px 10px; font-size:13.5px; font-weight:600; }
+  .flow i { color:var(--accent); font-style:normal; font-weight:700; }
+  table { width:100%; border-collapse:separate; border-spacing:0; font-size:14px; margin:6px 0 14px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--dim); }
+  th { color:var(--text); font-weight:600; }
+  tr:last-child td { border-bottom:0; }
+  td:first-child { color:var(--text); white-space:nowrap; }
+  code { font:13px ui-monospace, Consolas, monospace; color:var(--text); background:rgba(255,255,255,.06); padding:1px 5px; border-radius:4px; }
+  footer { color:#8b95a8; font-size:13px; margin-top:28px; text-shadow:0 1px 8px #000; }
+  @media (max-width:700px) { nav.toc ol { columns:1; } td:first-child { white-space:normal; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="top"><a href="../../">← UNTETHERED HEALTH MONITOR · TEAM TAKE</a></p>
+  <h1>Design notes</h1>
+  <p class="tag">Untethered from Earth, never without guidance.</p>
+  <p class="lead">How the system is put together: one pipeline that turns any health signal into a coordinated, verified response on board, and keeps Earth informed across delays and outages. The browser prototype implements this design end to end; crew readings in it are simulated, and NASA measurements drive the environment where they exist.</p>
+
+  <nav class="toc" aria-label="Contents"><ol>
+    <li><a href="#goals">Goals and constraints</a></li>
+    <li><a href="#arch">Architecture</a></li>
+    <li><a href="#model">Shared data model</a></li>
+    <li><a href="#monitor">Monitoring</a></li>
+    <li><a href="#predict">Prediction</a></li>
+    <li><a href="#respond">Response and crew coordination</a></li>
+    <li><a href="#comms">Communication with Earth</a></li>
+    <li><a href="#devices">Devices, alarms and privacy</a></li>
+    <li><a href="#missions">Missions and outposts</a></li>
+    <li><a href="#data">NASA data</a></li>
+    <li><a href="#verify">Verification</a></li>
+    <li><a href="#next">Extending the system</a></li>
+  </ol></nav>
+
+  <section id="goals">
+    <h2><span class="n">01</span>Goals and constraints</h2>
+    <ul>
+      <li><b>On board first.</b> Advice from Earth can be minutes late or missing, so detection, decisions and confirmation happen on the ship.</li>
+      <li><b>Done means recovered.</b> A command that reports success, or a task someone ticked, does not close a problem; only data showing recovery does.</li>
+      <li><b>Trust is earned by the data.</b> Every reading carries its source, quality and age; unknown is never treated as normal.</li>
+      <li><b>People decide.</b> The software is decision support. The crew medical officer makes medical decisions; the software records them and their reasons.</li>
+      <li><b>Traceable.</b> Every threshold and procedure step names its source, or is marked as an assumption.</li>
+    </ul>
+  </section>
+
+  <section id="arch">
+    <h2><span class="n">02</span>Architecture</h2>
+    <div class="flow"><span>Sensors &amp; crew reports</span><i>→</i><span>Data quality &amp; statistics</span><i>→</i><span>Rules → events</span><i>→</i><span>Prediction &amp; self-checks</span><i>→</i><span>Response plan per crew</span><i>→</i><span>Devices &amp; alarms</span><i>↔</i><span>Earth link</span></div>
+    <ul>
+      <li><b>One shared state, one writer per part.</b> Each module owns its own slice of the state and reads the others; modules talk only through that state and a small set of operations. Six parts were built in parallel against shared interface contracts.</li>
+      <li><b>A test bench, kept apart from the product.</b> A simulation of the crew, the cabin, equipment faults and the communication link stands in for missing hardware. The monitoring and response software sees only sensor readings and crew answers, never the simulation's ground truth; tests enforce this.</li>
+      <li><b>Deterministic time.</b> The whole system advances in 10-second steps; a 32-hour mission replays identically every time, in the browser or without graphics for automated checks.</li>
+      <li><b>Configuration, not code.</b> Sensors, rules, procedures, self-check questions and missions are data files; the same engine runs any mission described that way.</li>
+    </ul>
+  </section>
+
+  <section id="model">
+    <h2><span class="n">03</span>Shared data model</h2>
+    <table>
+      <tr><th>Object</th><th>What it carries</th></tr>
+      <tr><td>Reading</td><td>Value, unit, sensor, subject, source (NASA replay, simulated, crew report, estimate), quality and timestamp</td></tr>
+      <tr><td>Event</td><td>A rule's finding, with severity, evidence and a version that changes only when the facts change</td></tr>
+      <tr><td>Case</td><td>One response to one problem: the procedure in use, its state, and the conditions that close it</td></tr>
+      <tr><td>Plan</td><td>Every crew member's steps, who has each one and why, and whether data has confirmed it</td></tr>
+      <tr><td>Self-check</td><td>A request (who, what, by when, why) and its result, including who assisted</td></tr>
+      <tr><td>Message</td><td>What was sent to or from Earth, the time of the data it describes, and the case versions it refers to</td></tr>
+    </table>
+  </section>
+
+  <section id="monitor">
+    <h2><span class="n">04</span>Monitoring</h2>
+    <ul>
+      <li><b>Quality gate.</b> Poor sensor contact, stuck values, dropouts, implausible values and conflicting sources are flagged; a doubtful reading triggers a re-measurement and never counts as healthy.</li>
+      <li><b>Statistics that match the standards.</b> Time-weighted averages over 1 hour to 7 days, personal exposure built from where each person has been, cumulative radiation dose, and personal baselines.</li>
+      <li><b>Rules as data.</b> Conditions such as “1-hour CO₂ above 3 mmHg” (NASA-STD-3001) are written in data files with their source; four severity levels from advisory to emergency.</li>
+      <li><b>Events with a lifecycle.</b> Opened, escalated, cleared and closed, with versions, so later steps and messages know exactly which facts they act on.</li>
+    </ul>
+  </section>
+
+  <section id="predict">
+    <h2><span class="n">05</span>Prediction</h2>
+    <ul>
+      <li><b>Environment.</b> Cabin CO₂ is forecast hours ahead; a model learned from NASA ISS cabin telemetry runs alongside a trend forecast.</li>
+      <li><b>Health.</b> Exposure (CO₂, radiation, lost sleep) combined with each person's baseline and published exposure–response evidence predicts which indicators are likely to change and roughly when.</li>
+      <li><b>Prepare in advance.</b> Each person's self-check plan and alerts adapt to the forecast, within a daily limit. Predictions only add checks; they never cancel an alarm.</li>
+      <li><b>Honest scoring.</b> Every forecast is later marked as a hit or a false alarm, so the crew can judge how far to trust it.</li>
+    </ul>
+  </section>
+
+  <section id="respond">
+    <h2><span class="n">06</span>Response and crew coordination</h2>
+    <ul>
+      <li><b>Procedures, not improvisation.</b> Each problem opens a written procedure whose steps say what to do, who should do it, how long it takes, whether it is hazardous, what to do if Earth cannot be reached, and how the data confirms it.</li>
+      <li><b>One plan for the whole crew.</b> Steps from all open problems are merged, ordered (protect people, check, fix the source, treat, measure again) and assigned by role, skill, location and health.</li>
+      <li><b>Safety by design.</b> Someone who is unwell is relieved of risky work, with the reason recorded; crewmates check on each other; hazardous work requires a watcher before the command is sent.</li>
+      <li><b>Priorities change.</b> A more urgent event pauses lower-priority work and resumes it automatically afterwards.</li>
+      <li><b>Closing.</b> A case closes only when its data conditions hold; health cases are signed off by the crew medical officer.</li>
+    </ul>
+  </section>
+
+  <section id="comms">
+    <h2><span class="n">07</span>Communication with Earth</h2>
+    <ul>
+      <li><b>Delay and outages are part of the model.</b> Messages travel with a one-way delay; during an outage they queue and are sent when the link returns.</li>
+      <li><b>Every message knows its moment.</b> It carries the time of the data it describes and the versions of the problems it refers to.</li>
+      <li><b>Late advice is weighed, not obeyed.</b> When a reply arrives after the situation has changed, it is flagged as stale; the medical officer adopts or declines it with a reason, and the decision goes back to Earth.</li>
+      <li><b>Daily report.</b> A summary of the day's events, cases and checks is sent to the ground.</li>
+    </ul>
+  </section>
+
+  <section id="devices">
+    <h2><span class="n">08</span>Devices, alarms and privacy</h2>
+    <ul>
+      <li><b>Wrist</b> for alerts that find the person; <b>tablet</b> for each person's readings, body map, checklist and self-checks; <b>module workstations</b> for the cabin's caution and warning, environment, events and crew status; a <b>ground console</b> for the flight surgeon.</li>
+      <li><b>Graded alarms.</b> Four levels, each with its own colour and sound pattern, following the caution-and-warning conventions of NASA-STD-3001 Volume 2.</li>
+      <li><b>Right audience.</b> Ship-wide hazards are shared with everyone; personal health alerts go to the person and the medical officer, while others see only “Crew health – name”.</li>
+    </ul>
+  </section>
+
+  <section id="missions">
+    <h2><span class="n">09</span>Missions and outposts</h2>
+    <p>A mission is a package of sensor registry, rules, procedures, self-check questions and scenario. Two packages run on the same engine:</p>
+    <ul>
+      <li><b>Mars-transit spacecraft</b> — four crew, three modules and a shelter, Earth minutes away and sometimes out of contact.</li>
+      <li><b>Mars surface</b> — a base and a pressurized rover, the crew split two and two; each side keeps working on its own data when the relay drops; alarms move to the helmet during a spacewalk; procedures scale to a two-person crew with medical support from the base.</li>
+    </ul>
+  </section>
+
+  <section id="data">
+    <h2><span class="n">10</span>NASA data</h2>
+    <table>
+      <tr><th>Source</th><th>Role in the system</th></tr>
+      <tr><td>NASA OSDR EDA (ISS, RR-1)</td><td>Real cabin CO₂, temperature and humidity history; trains the CO₂ forecast</td></tr>
+      <tr><td>NASA RadLab, Artemis I Orion HERA</td><td>Measured deep-space radiation background</td></tr>
+      <tr><td>NASA RadLab, Curiosity MSL-RAD 2017</td><td>Shape of a real solar particle event for a time-compressed spacecraft stress test (peak assumed)</td></tr>
+      <tr><td>NASA RadLab, Curiosity MSL-RAD surface 2024</td><td>Measured surface dose rates, unscaled, driving the EVA radiation warning</td></tr>
+      <tr><td>NASA/JPL Curiosity traverse</td><td>Real Gale Crater route for the rover</td></tr>
+    </table>
+    <p>Each dataset's download query, processing steps and file fingerprints are recorded, so the inputs can be rebuilt from the NASA sources.</p>
+  </section>
+
+  <section id="verify">
+    <h2><span class="n">11</span>Verification</h2>
+    <ul>
+      <li><b>Scenario checks.</b> Each mission scenario is replayed without graphics and checked against written expectations (for example: a poor-contact reading must not raise an alarm; a successful restart must not close the CO₂ case; late advice must be flagged).</li>
+      <li><b>Automated tests</b> across every module, including tests that make sure no device or monitor can read the simulation's ground truth.</li>
+      <li><b>Repeatable.</b> Deterministic time and seeded noise give the same result on every run.</li>
+    </ul>
+  </section>
+
+  <section id="next">
+    <h2><span class="n">12</span>Extending the system</h2>
+    <ul>
+      <li>New sensors and devices — an EEG headband, a glucose meter, real wearables — join as registry entries, rules and procedures.</li>
+      <li>New outposts — a lunar base, a station — are new mission packages on the same engine.</li>
+      <li>An evidence assistant could explain readings from reviewed sources, while rules and people stay in control of actions.</li>
+      <li>Review of thresholds and procedures with flight medicine experts, and testing with real hardware.</li>
+    </ul>
+  </section>
+
+  <footer>NASA Space Apps Challenge 2026 · “Create Health Monitoring Software for Astronauts on Space Missions”. Team TAKE; not affiliated with or endorsed by NASA. Decision support, not a medical device. Background photos: NASA iss068e044995 and iss073e1198938.</footer>
+</main>
+</body>
+</html>
