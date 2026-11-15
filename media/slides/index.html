@@ -396,6 +396,8 @@
   .pts li::before { content: ""; position: absolute; left: 3px; top: 11px; width: 9px; height: 9px; background: #FF5236; border-radius: 1px; transform: rotate(45deg); }
   .pts li b { font-weight: 500; color: #FFFFFF; }
   .pts li em { font-style: normal; color: var(--t2); }
+  .nav-hint { position: absolute; left: 96px; bottom: 36px; z-index: 30; font: 500 18px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: rgba(244,247,251,0.72); }
+  @media print { .nav-hint { display: none !important; } }
 </style>
 </head>
 <body>
@@ -616,6 +618,7 @@
         <p class="credit">Image: NASA · iss068e044995 · iss073e1198938 · AI-assisted overlay</p>
       </div>
   </div></div>
+  <div class="nav-hint">Click or press &rarr; to continue &middot; narration plays on each slide</div>
 </section>
 
 <!-- ============ 2 · PIPELINE ============ -->
@@ -1008,10 +1011,16 @@
   (function () {
     var btn = document.getElementById('snd');
     var vids = Array.prototype.slice.call(document.querySelectorAll('.clip video'));
-    var soundOn = false, gestured = false;
+    var soundOn = false, gestured = false, skipClick = false;
+    var vo = [1, 2, 3, 4, 5, 6, 7].map(function (n) { var a = new Audio('media/vo-' + n + '.mp3'); a.preload = 'auto'; return a; });
+    window.__vo = vo;
+    function stopVo() { vo.forEach(function (a) { a.pause(); try { a.currentTime = 0; } catch (e) {} }); }
+    var voTimer = null;
+    function playVo() { stopVo(); clearTimeout(voTimer); if (!soundOn) return; var idx = Reveal.getIndices().h; voTimer = setTimeout(function () { if (Reveal.getIndices().h !== idx) return; stopVo(); var a = vo[idx]; if (a) a.play().catch(function () {}); }, 350); }
     function apply() {
-      vids.forEach(function (v) { v.muted = !soundOn || !v.hasAttribute('data-narrated'); });
-      btn.textContent = soundOn ? 'Sound on' : (gestured ? 'Sound off' : 'Sound off · click to unmute');
+      vids.forEach(function (v) { v.muted = true; });
+      if (!soundOn) stopVo();
+      btn.textContent = soundOn ? 'Narration on' : (gestured ? 'Narration off' : 'Click anywhere to start · narration');
       btn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
     }
     vids.forEach(function (v) { if (!v.hasAttribute('loop')) v.setAttribute('data-narrated', ''); });
@@ -1019,11 +1028,17 @@
       if (gestured) return;
       gestured = true;
       if (e && e.target === btn) return; // the button handles itself
-      soundOn = true; apply();
+      soundOn = true; apply(); playVo(); skipClick = !!(e && e.type === 'pointerdown');
     }
     document.addEventListener('pointerdown', firstGesture, true);
     document.addEventListener('keydown', firstGesture, true);
-    btn.addEventListener('click', function (e) { e.stopPropagation(); soundOn = !soundOn; apply(); });
+    btn.addEventListener('click', function (e) { e.stopPropagation(); soundOn = !soundOn; apply(); if (soundOn) playVo(); });
+    document.addEventListener('click', function (e) {
+      if (skipClick) { skipClick = false; return; }
+      if (e.target.closest && e.target.closest('a, button, .clip, .controls, #snd, .scr')) return;
+      Reveal.next();
+    });
+    Reveal.on('slidechanged', playVo);
     // click on a clip toggles play / pause
     vids.forEach(function (v) {
       var scr = v.parentNode;
