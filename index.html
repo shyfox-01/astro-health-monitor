@@ -50,6 +50,28 @@
   .hero h1 { font-size:clamp(34px,5.6vw,56px); text-shadow:0 2px 18px rgba(0,0,0,.7); }
   .hero .credit { position:absolute; z-index:1; right:14px; bottom:10px; margin:0; color:#8a93a6; font-size:11.5px; text-shadow:0 1px 6px #000; }
   main { padding-top:8px; }
+
+  /* Whole page: deep space. NASA star field (iss073e1198938) and faint space-blue glows stay fixed behind everything;
+     every content block is a translucent "glass" panel floating over it. Same palette as the 7-slide deck. */
+  :root { --bg:#020305; --panel:rgba(18,26,44,.62); --line:rgba(140,170,225,.20); --glass-blur:blur(8px) saturate(120%); }
+  html { background:#020305; }
+  body { background:transparent; position:relative; }
+  body::before { content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:radial-gradient(1500px 900px at 0% 0%, rgba(15,34,70,.55), rgba(15,34,70,0) 70%),
+               linear-gradient(rgba(2,3,5,.42), rgba(2,3,5,.42)),
+               url(media/iss068e044995.jpg) 70% 60% / cover no-repeat, #020305; }
+  body::after { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.85;
+    background:url(media/stars-iss073e1198938.png) center / cover no-repeat; }
+  .hero { background:transparent; }
+  a.card, ol.flow li, .note, .vid video, section[aria-label="Start here"] { -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur); }
+  section[aria-label="Start here"] { background:rgba(23,40,59,.70) !important; }
+  .note { background:rgba(27,34,54,.70); }
+  table { border-collapse:separate; border-spacing:0; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur); }
+  tr:last-child td { border-bottom:0; }
+  th, td { padding:10px 12px; }
+  h3.sec, h3 { text-shadow:0 1px 12px rgba(0,0,0,.8); }
+  .more, footer { text-shadow:0 1px 8px rgba(0,0,0,.9); }
+  footer { color:#8b95a8; }
   @media (max-width:900px) {
     .hero { min-height:auto; }
     .hero::before { background-size:cover; background-position:62% bottom; }
@@ -147,7 +169,7 @@
 
   <div class="note" style="margin-top:22px"><b>Decision support, not diagnosis:</b> crew medical officers make medical decisions and the software records them. In this prototype the crew, their readings, symptoms and equipment faults are simulated; no astronaut medical data is used. Not a medical device.</div>
 
-  <footer>NASA Space Apps Challenge 2026 · "Create Health Monitoring Software for Astronauts on Space Missions". Team TAKE; not affiliated with or endorsed by NASA. Crew 3D avatars: Microsoft Rocketbox (MIT). Header photo: NASA image art002e021278 (Artemis II, Earthset). Data courtesy of NASA OSDR (EDA, RadLab) and the MSL mission.</footer>
+  <footer>NASA Space Apps Challenge 2026 · "Create Health Monitoring Software for Astronauts on Space Missions". Team TAKE; not affiliated with or endorsed by NASA. Crew 3D avatars: Microsoft Rocketbox (MIT). Photos: NASA art002e021278 (Artemis II, Earthset), iss068e044995 (orbital sunrise from the ISS) and iss073e1198938 (stars). Data courtesy of NASA OSDR (EDA, RadLab) and the MSL mission.</footer>
 </main>
 </body>
 </html>
