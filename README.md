@@ -1,4 +1,4 @@
-# Astro Health Monitor — Team TAKE
+# Untethered Health Monitor — Team TAKE
 
 **Welcome, judges. Start with our [one-minute guided tour →](https://shyfox-01.github.io/astro-health-monitor/media/judge-guide/)**
 
@@ -16,7 +16,7 @@ In the spacecraft scene: **drag** to look, **G** for the watch, **T** for the ta
 
 ## What this repository contains
 
-This repository hosts the **built static demo and its lightweight guided tour** (application source and private development history are not included) for the NASA Space Apps Challenge 2026 project "Astro Health Monitor" by Team TAKE.
+This repository hosts the **built static demo and its lightweight guided tour** (application source and private development history are not included) for the NASA Space Apps Challenge 2026 project "Untethered Health Monitor" by Team TAKE.
 
 - Live demo: https://shyfox-01.github.io/astro-health-monitor/
 - Everything runs in the browser: simulation, monitoring, self-checks, response steps and device programs.
